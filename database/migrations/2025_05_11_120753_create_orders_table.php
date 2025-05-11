@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users');
             $table->integer('total_amount');
             $table->enum('status', ['pending', 'completed'])->default('pending');
-            $table->enum('payment_method', ['Visa', 'Mastercard', 'MEEZA']);
+            $table->enum('payment_method', ['visa', 'mastercard', 'meeza']);
             $table->string('transaction_id')->nullable();
             $table->timestamps();
         });
