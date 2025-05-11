@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\OrderStatus;
+use App\Enums\PaymentType;
 use App\Models\Relations\OrderRelations;
 use Illuminate\Database\Eloquent\Model;
 
@@ -26,8 +28,8 @@ class Order extends Model
     {
         return [
             'total_amount' => 'float',
-            'status' => 'enum',
-            'payment_method' => 'enum',
+            'status' => OrderStatus::class,
+            'payment_method' => PaymentType::class,
             'transaction_id' => 'string'
         ];
     }

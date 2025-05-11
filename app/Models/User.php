@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\Relations\UserRelations;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -24,7 +23,7 @@ class User extends Authenticatable
         'username',
         'email',
         'phone',
-        'birthday',
+        'birthdate',
         'address',
         'gender',
         'password',
@@ -50,6 +49,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'birthdate' => 'date:Y-m-d',
         ];
     }
 }
