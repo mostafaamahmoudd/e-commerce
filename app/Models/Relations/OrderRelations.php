@@ -2,6 +2,7 @@
 
 namespace App\Models\Relations;
 
+use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\User;
 
@@ -16,5 +17,10 @@ trait OrderRelations
     {
         return $this->belongsToMany(Product::class, 'order_items')
             ->withPivot(['quantity', 'price']);
+    }
+
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
     }
 }
