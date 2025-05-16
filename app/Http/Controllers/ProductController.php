@@ -35,7 +35,7 @@ class ProductController extends Controller
 //            'name' => 'required',
 //            'price' => 'required',
 //            'description' => 'required',
-//            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+    //            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
 //            'category_id' => 'required',
 //            'quantity' => 'required',
 //        ]));
