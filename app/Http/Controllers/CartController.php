@@ -3,9 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Support\Cart;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
 
 class CartController extends Controller
 {
@@ -14,7 +13,7 @@ class CartController extends Controller
      */
     public function index()
     {
-        $cart = $this->getCartData();
+        $cart = app(Cart::class)->getData();
 
         return view('cart.index', [
             'cart' => $cart,
@@ -47,18 +46,18 @@ class CartController extends Controller
                 return back()->with('error', 'This product is currently unavailable');
             }
 
-            $cart = $this->getCartData();
-            $existingItemKey = $this->findCartItemKey($product->getKey(), $request->get('product_id'));
+            // $cart = $this->getCartData();
+            // $existingItemKey = $this->findCartItemKey($product->getKey(), $request->get('product_id'));
 
-            if($existingItemKey) {
-                $quantity = $cart['items'][$existingItemKey]['quantity'] + $request->get('quantity');
+            // if($existingItemKey) {
+            //     $quantity = $cart['items'][$existingItemKey]['quantity'] + $request->get('quantity');
 
-                if ($product->quantity < $quantity) {
-                    return back()->with('error', 'This product is currently out of stock');
-                }
+            //     if ($product->quantity < $quantity) {
+            //         return back()->with('error', 'This product is currently out of stock');
+            //     }
 
-                $cart['items'][$existingItemKey]['quantity'] = $quantity;
-            }
+            //     $cart['items'][$existingItemKey]['quantity'] = $quantity;
+            // }
 
             if ($product->quantity < $request->get('quantity')) {
                 return back()->with('error', 'This product is currently out of stock');
@@ -70,8 +69,8 @@ class CartController extends Controller
                 'price' => $product->price,
             ];
 
-            $this->saveCart($cart);
-            $this->syncCartToDatabase();
+            // $this->saveCart($cart);
+            // $this->syncCartToDatabase();
 
             return back()->with('success', 'Item added to cart');
         } catch (\Exception $e) {
@@ -97,7 +96,7 @@ class CartController extends Controller
         ]);
 
         try {
-            $cart = $this->getCartData();
+            $cart = app(Cart::class)->getData();
 
             if (!isset($cart['items'][$itemKey])) {
                 return back()->with('error', 'Item not found');
@@ -111,8 +110,8 @@ class CartController extends Controller
 
             $cart['items'][$itemKey]['quantity'] = $request->get('quantity');
 
-            $this->saveCart($cart);
-            $this->syncCartToDatabase();
+            // $this->saveCart($cart);
+            // $this->syncCartToDatabase();
 
             return back()->with('success', 'Item updated');
         } catch (\Exception $e) {
@@ -126,15 +125,15 @@ class CartController extends Controller
     public function destroy($itemKey)
     {
         try {
-            $cart = $this->getCartData();
+            $cart = app(Cart::class)->getData();
 
             if (!isset($cart['items'][$itemKey])) {
                 unset($cart['items'][$itemKey]);
 
                 $cart['items'] = array_values($cart['items']);
 
-                $this->saveCart($cart);
-                $this->syncCartToDatabase();
+                // $this->saveCart($cart);
+                // $this->syncCartToDatabase();
             }
 
             return back()->with('success', 'Item deleted');
@@ -143,155 +142,132 @@ class CartController extends Controller
         }
     }
 
-    public function clear()
-    {
-        Session::forget('cart');
+    // private function saveCart($cart)
+    // {
+    //     $cart['totals'] = $this->calculateTotals($cart);
 
-        if (Auth::check()) {
-            Auth::user()->cart()->delete();
-        }
+    //     if (Auth::check()) {
+    //         Auth::user()->cart()->updateOrCreate([], [
+    //             'content' => $cart,
+    //         ]);
+    //     } else {
+    //         Session::put('cart', $cart);
+    //     }
+    // }
 
-        return back()->with('success', 'Cart cleared');
-    }
+    // private function findCartItemKey($productId, $productKey)
+    // {
+    //     $cart = app(Cart::class)->getData();
 
-    private function getCartData()
-    {
-        if (Auth::check()) {
-            return Auth::user()->cart()->firstOrCreate()->content();
-        }
+    //     foreach ($cart['items'] as $key => $item) {
+    //         if ($item['product_id'] == $productId && $item['product_key'] == $productKey) {
+    //             return $key;
+    //         }
+    //     }
 
-        return Session::get('cart', [
-            'items' => [],
-            'total' => [],
-        ]);
-    }
+    //     return null;
+    // }
 
-    private function saveCart($cart)
-    {
-        $cart['totals'] = $this->calculateTotals($cart);
+    // private function calculateTotals($cart)
+    // {
+    //     $subtotal = 0;
+    //     foreach ($cart['items'] as $key) {
+    //         $subtotal += $key['price'] * $key['quantity'];
+    //     }
 
-        if (Auth::check()) {
-            Auth::user()->cart()->updateOrCreate([], [
-                'content' => $cart,
-            ]);
-        } else {
-            Session::put('cart', $cart);
-        }
-    }
+    //     $tax = $subtotal * 0.1;
 
-    private function findCartItemKey($productId, $productKey)
-    {
-        $cart = $this->getCartData();
+    //     return [
+    //         'subtotal' => $subtotal,
+    //         'shipping' => 5.99,
+    //         'tax' => $tax,
+    //         'total' => max(0, $subtotal - 5.99 + $tax)
+    //     ];
+    // }
 
-        foreach ($cart['items'] as $key => $item) {
-            if ($item['product_id'] == $productId && $item['product_key'] == $productKey) {
-                return $key;
-            }
-        }
+    // private function syncCartToDatabase()
+    // {
+    //     if (Auth::check()) {
+    //         $sessionCart = Session::get('cart');
 
-        return null;
-    }
+    //         if ($sessionCart) {
+    //             $dbCart = Auth::user()->cart()->firstOrCreate();
+    //             $merggedCarts = $this->mergeCarts($dbCart->content, $sessionCart);
 
-    private function calculateTotals($cart)
-    {
-        $subtotal = 0;
-        foreach ($cart['items'] as $key) {
-            $subtotal += $key['price'] * $key['quantity'];
-        }
+    //             $dbCart->update(['content' => $merggedCarts]);
 
-        $tax = $subtotal * 0.1;
+    //             Session::forget('cart');
+    //         }
+    //     }
+    // }
 
-        return [
-            'subtotal' => $subtotal,
-            'shipping' => 5.99,
-            'tax' => $tax,
-            'total' => max(0, $subtotal - 5.99 + $tax)
-        ];
-    }
+    // private function mergeCarts($dbCart, $sessionCart)
+    // {
+    //     $mergedItems = $dbCart['items'] ?? [];
 
-    private function syncCartToDatabase()
-    {
-        if (Auth::check()) {
-            $sessionCart = Session::get('cart');
+    //     foreach ($sessionCart['items'] as $sessionItem) {
+    //         $exists = false;
 
-            if ($sessionCart) {
-                $dbCart = Auth::user()->cart()->firstOrCreate();
-                $merggedCarts = $this->mergeCarts($dbCart->content, $sessionCart);
+    //         foreach ($mergedItems as &$mergedItem) {
+    //             if ($this->isSameItem($mergedItem, $sessionItem)) {
+    //                 $mergedItem = $this->mergeItemQuantities($mergedItem, $sessionItem);
+    //                 $exists = true;
+    //                 break;
+    //             }
+    //         }
 
-                $dbCart->update(['content' => $merggedCarts]);
+    //         if (!$exists) {
+    //             $mergedItems[] = $this->validateItem($sessionItem);
+    //         }
+    //     }
 
-                Session::forget('cart');
-            }
-        }
-    }
+    //     $mergedItems = array_filter(array_map(function($item) {
+    //         return $this->validateItem($item);
+    //     }, $mergedItems));
 
-    private function mergeCarts($dbCart, $sessionCart)
-    {
-        $mergedItems = $dbCart['items'] ?? [];
+    //     return [
+    //         'items' => array_values($mergedItems),
+    //         'totals' => $this->calculateTotals(['items' => $mergedItems])
+    //     ];
+    // }
 
-        foreach ($sessionCart['items'] as $sessionItem) {
-            $exists = false;
+    // private function isSameItem($item1, $item2)
+    // {
+    //     return $item1['product_id'] === $item2['product_id'];
+    // }
 
-            foreach ($mergedItems as &$mergedItem) {
-                if ($this->isSameItem($mergedItem, $sessionItem)) {
-                    $mergedItem = $this->mergeItemQuantities($mergedItem, $sessionItem);
-                    $exists = true;
-                    break;
-                }
-            }
+    // private function mergeItemQuantities($existingItem, $newItem)
+    // {
+    //     $product = Product::find($existingItem['product_id']);
 
-            if (!$exists) {
-                $mergedItems[] = $this->validateItem($sessionItem);
-            }
-        }
+    //     if (!$product || !$product->is_available) {
+    //         return null;
+    //     }
 
-        $mergedItems = array_filter(array_map(function($item) {
-            return $this->validateItem($item);
-        }, $mergedItems));
+    //     $newQuantity = $existingItem['quantity'] + $newItem['quantity'];
+    //     $maxQuantity = $product->stock;
 
-        return [
-            'items' => array_values($mergedItems),
-            'totals' => $this->calculateTotals(['items' => $mergedItems])
-        ];
-    }
+    //     return [
+    //         'product_id' => $existingItem['product_id'],
+    //         'quantity' => min($newQuantity, $maxQuantity),
+    //         'price' => $product->price,
+    //     ];
+    // }
 
-    private function isSameItem($item1, $item2)
-    {
-        return $item1['product_id'] === $item2['product_id'];
-    }
+    // private function validateItem($item)
+    // {
+    //     $product = Product::find($item['product_id']);
 
-    private function mergeItemQuantities($existingItem, $newItem)
-    {
-        $product = Product::find($existingItem['product_id']);
+    //     if (!$product || !$product->is_available) {
+    //         return null;
+    //     }
 
-        if (!$product || !$product->is_available) {
-            return null;
-        }
+    //     $maxQuantity = $product->quantity;
 
-        $newQuantity = $existingItem['quantity'] + $newItem['quantity'];
-        $maxQuantity = $product->stock;
-
-        return [
-            'product_id' => $existingItem['product_id'],
-            'quantity' => min($newQuantity, $maxQuantity),
-            'price' => $product->price,
-        ];
-    }
-
-    private function validateItem($item)
-    {
-        $product = Product::find($item['product_id']);
-
-        if (!$product || !$product->is_available) {
-            return null;
-        }
-
-        $maxQuantity = $product->quantity;
-
-        return [
-            'product_id' => $item['product_id'],
-            'quantity' => min($item['quantity'], $maxQuantity),
-            'price' => $product->price,
-        ];
-    }
+    //     return [
+    //         'product_id' => $item['product_id'],
+    //         'quantity' => min($item['quantity'], $maxQuantity),
+    //         'price' => $product->price,
+    //     ];
+    // }
 }
