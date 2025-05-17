@@ -29,37 +29,37 @@
             <div class="container">
                 <div class="row">
                     <div class="col-lg-2 col-md-4 mb-md-3 mb-lg-0">
-                        <div class="banner-features wow fadeIn animated hover-up">
+                        <div class="banner-features hover-up">
                             <img src="{{ url('/images/theme/icons/feature-1.png') }}" alt="">
                             <h4 class="bg-1">Free Shipping</h4>
                         </div>
                     </div>
                     <div class="col-lg-2 col-md-4 mb-md-3 mb-lg-0">
-                        <div class="banner-features wow fadeIn animated hover-up">
+                        <div class="banner-features hover-up">
                             <img src="{{ url('/images/theme/icons/feature-2.png') }}" alt="">
                             <h4 class="bg-3">Online Order</h4>
                         </div>
                     </div>
                     <div class="col-lg-2 col-md-4 mb-md-3 mb-lg-0">
-                        <div class="banner-features wow fadeIn animated hover-up">
+                        <div class="banner-features hover-up">
                             <img src="{{ url('/images/theme/icons/feature-3.png') }}" alt="">
                             <h4 class="bg-2">Save Money</h4>
                         </div>
                     </div>
                     <div class="col-lg-2 col-md-4 mb-md-3 mb-lg-0">
-                        <div class="banner-features wow fadeIn animated hover-up">
+                        <div class="banner-features hover-up">
                             <img src="{{ url('/images/theme/icons/feature-4.png') }}" alt="">
                             <h4 class="bg-4">Promotions</h4>
                         </div>
                     </div>
                     <div class="col-lg-2 col-md-4 mb-md-3 mb-lg-0">
-                        <div class="banner-features wow fadeIn animated hover-up">
+                        <div class="banner-features hover-up">
                             <img src="{{ url('/images/theme/icons/feature-5.png') }}" alt="">
                             <h4 class="bg-5">Happy Sell</h4>
                         </div>
                     </div>
                     <div class="col-lg-2 col-md-4 mb-md-3 mb-lg-0">
-                        <div class="banner-features wow fadeIn animated hover-up">
+                        <div class="banner-features hover-up">
                             <img src="{{ url('/images/theme/icons/feature-6.png') }}" alt="">
                             <h4 class="bg-6">24/7 Support</h4>
                         </div>
@@ -68,7 +68,7 @@
             </div>
         </section>
 
-        <section class="product-tabs section-padding position-relative wow fadeIn animated">
+        <section class="product-tabs section-padding position-relative">
             <div class="container">
                         <div class="row product-grid-4">
                             <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6 col-6">
@@ -109,19 +109,21 @@
         </section>
 
         <section class="popular-categories section-padding mt-15 mb-25">
-            <div class="container wow fadeIn animated">
+            <div class="container">
                 <h3 class="section-title mb-20"><span>Popular</span> Categories</h3>
                 <div class="carausel-6-columns-cover position-relative">
                     <div class="slider-arrow slider-arrow-2 carausel-6-columns-arrow" id="carausel-6-columns-arrows"></div>
                     <div class="carausel-6-columns" id="carausel-6-columns">
                         @foreach($popularCategories as $popularCategory)
                             <div class="card-1">
-                                <figure class=" img-hover-scale overflow-hidden">
+                                <figure class="img-hover-scale overflow-hidden">
                                     <a href="shop.html"><img src="{{ url('/images/shop/category-thumb-1.jpg') }}" alt=""></a>
                                 </figure>
-                                    <h5><a href="shop.html">
+                                <h5>
+                                    <a href="shop.html">
                                         {{ $popularCategory->name }}
-                                    </a></h5>
+                                    </a>
+                                </h5>
                             </div>
                         @endforeach
                     </div>

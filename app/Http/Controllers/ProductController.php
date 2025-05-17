@@ -62,34 +62,24 @@ class ProductController extends Controller
         ));
     }
 
-    public function search(ProductRequest $request)
+    public function search(Request $request)
     {
-        $validated = $request->validate([
+        $request->validate([
             'query' => 'required|string|min:2|max:255',
             'category' => 'nullable|exists:categories,id'
         ]);
 
-        $query = Product::search($validated['query'])
-            ->query(function ($builder) {
-                $builder->with('media')->active();
-            });
+        $query = Product::query()
+            ->where('name', 'like', "%".$request->get('query')."%");
 
-        if (isset($validated['category'])) {
-            $query->where('category_id', $validated['category']);
+        if ($categoryId = $request->get('category')) {
+            $query->where('category_id', $categoryId);
         }
 
         $products = $query->paginate(10);
 
         return view('products.index', compact('products'));
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-//    public function edit(string $id)
-//    {
-//        return view('products.edit');
-//    }
 
     /**
      * Update the specified resource in storage.

@@ -12,7 +12,7 @@ class HomeController extends Controller
     {
         $products = Product::paginate(10);
 
-        $newArrivals = Product::with(['category', 'media'])
+        $newArrivals = Product::query()
             ->latest()
             ->limit(12)
             ->get();
