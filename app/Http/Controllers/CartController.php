@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CartRequest;
-use App\Models\Cart;
 use App\Models\Product;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 
@@ -15,7 +14,7 @@ class CartController extends Controller
      */
     public function index()
     {
-        $cart = Cart::getCartData();
+        $cart = $this->getCartData();
 
         return view('cart.index', [
             'cart' => $cart,
@@ -34,25 +33,25 @@ class CartController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(CartRequest $request)
+    public function store(Request $request)
     {
-        $validated = $request->validate([
+        $request->validate([
             'product_id' => 'required|exists:products,id',
             'quantity' => 'required|integer|min:1|max:10',
         ]);
 
         try {
-            $product = Product::findOrFail($validated['product_id']);
+            $product = Product::findOrFail($request->get('product_id'));
 
             if($product->is_available) {
                 return back()->with('error', 'This product is currently unavailable');
             }
 
-            $cart = $this->getCartDate();
-            $existingItemKey = $this->findCartItemKey($product->id, $validated['product_id']);
+            $cart = $this->getCartData();
+            $existingItemKey = $this->findCartItemKey($product->getKey(), $request->get('product_id'));
 
             if($existingItemKey) {
-                $quantity = $cart['items'][$existingItemKey]['quantity'] + $validated['quantity'];
+                $quantity = $cart['items'][$existingItemKey]['quantity'] + $request->get('quantity');
 
                 if ($product->quantity < $quantity) {
                     return back()->with('error', 'This product is currently out of stock');
@@ -61,13 +60,13 @@ class CartController extends Controller
                 $cart['items'][$existingItemKey]['quantity'] = $quantity;
             }
 
-            if ($product->quantity < $validated['quantity']) {
+            if ($product->quantity < $request->get('quantity')) {
                 return back()->with('error', 'This product is currently out of stock');
             }
 
             $cart['items'][] = [
-                'product_id' => $validated['product_id'],
-                'quantity' => $validated['quantity'],
+                'product_id' => $request->get('product_id'),
+                'quantity' => $request->get('quantity'),
                 'price' => $product->price,
             ];
 
@@ -91,14 +90,14 @@ class CartController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(CartRequest $request, $itemKey)
+    public function update(Request $request, $itemKey)
     {
-        $validated = $request->validate([
+        $request->validate([
             'quantity' => 'required|integer|min:1|max:10',
         ]);
 
         try {
-            $cart = $this->getCartDate();
+            $cart = $this->getCartData();
 
             if (!isset($cart['items'][$itemKey])) {
                 return back()->with('error', 'Item not found');
@@ -106,11 +105,12 @@ class CartController extends Controller
 
             $product = Product::find($cart['items'][$itemKey]['product_id']);
 
-            if ($product->quantity < $validated['quantity']) {
+            if ($product->quantity < $request->get('quantity')) {
                 return back()->with('error', 'This product is currently out of stock');
             }
 
-            $cart['items'][$itemKey]['quantity'] = $validated['quantity'];
+            $cart['items'][$itemKey]['quantity'] = $request->get('quantity');
+
             $this->saveCart($cart);
             $this->syncCartToDatabase();
 
@@ -154,7 +154,7 @@ class CartController extends Controller
         return back()->with('success', 'Cart cleared');
     }
 
-    private function getCartDate()
+    private function getCartData()
     {
         if (Auth::check()) {
             return Auth::user()->cart()->firstOrCreate()->content();
@@ -181,7 +181,7 @@ class CartController extends Controller
 
     private function findCartItemKey($productId, $productKey)
     {
-        $cart = $this->getCartDate();
+        $cart = $this->getCartData();
 
         foreach ($cart['items'] as $key => $item) {
             if ($item['product_id'] == $productId && $item['product_key'] == $productKey) {
@@ -217,7 +217,9 @@ class CartController extends Controller
             if ($sessionCart) {
                 $dbCart = Auth::user()->cart()->firstOrCreate();
                 $merggedCarts = $this->mergeCarts($dbCart->content, $sessionCart);
+
                 $dbCart->update(['content' => $merggedCarts]);
+
                 Session::forget('cart');
             }
         }
