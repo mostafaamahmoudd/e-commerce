@@ -2,21 +2,12 @@
 
 namespace App\Http\Controllers\Helpers;
 
-use App\Models\Cart;
 use App\Models\Order;
 use App\Models\Product;
+use App\Support\Cart;
 
 trait CheckoutHelpers
 {
-    private function createPaymentIntent($stripe, $amount)
-    {
-        return $stripe->paymentIntents->create([
-            'amount' => $amount * 100,
-            'currency' => 'usd',
-            'payment_method_types' => ['card'],
-        ]);
-    }
-
     private function validateInventory($items)
     {
         foreach ($items as $item) {
