@@ -2,7 +2,12 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'welcome')->name('welcome');
+
+Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('welcome');
+
+Route::get('/products', [App\Http\Controllers\ProductController::class, 'index'])->name('products.index');
+Route::get('/products/{product:slug}', [App\Http\Controllers\ProductController::class, 'show'])->name('products.show');
+Route::get('/search', [App\Http\Controllers\ProductController::class, 'search'])->name('products.search');
 
 Route::view('/products/{product}', 'products.show');
 
