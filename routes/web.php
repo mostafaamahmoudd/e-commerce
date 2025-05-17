@@ -13,6 +13,8 @@ Route::resource('cart', App\Http\Controllers\CartController::class);
 
 Route::resource('checkout', \App\Http\Controllers\CheckoutController::class);
 
+Route::resource('order', \App\Http\Controllers\OrderController::class);
+
 Route::view('/products/{product}', 'products.show');
 
 Route::view('/cart', 'cart');
