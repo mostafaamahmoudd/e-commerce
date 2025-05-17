@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\CartController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -10,7 +9,9 @@ Route::get('/products', [App\Http\Controllers\ProductController::class, 'index']
 Route::get('/products/{product:slug}', [App\Http\Controllers\ProductController::class, 'show'])->name('products.show');
 Route::get('/search', [App\Http\Controllers\ProductController::class, 'search'])->name('products.search');
 
-Route::resource('cart', CartController::class);
+Route::resource('cart', App\Http\Controllers\CartController::class);
+
+Route::resource('checkout', \App\Http\Controllers\CheckoutController::class);
 
 Route::view('/products/{product}', 'products.show');
 
