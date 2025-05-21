@@ -29,6 +29,8 @@ Route::get('/checkout', [App\Http\Controllers\CheckoutController::class, 'show']
 Route::post('/checkout', [App\Http\Controllers\CheckoutController::class, 'store'])
     ->middleware('auth');
 
+Route::resource('order', \App\Http\Controllers\OrderController::class);
+
 Route::view('/pages/privacy-policy', 'pages.privacy-policy')
     ->name('pages.privacy-policy');
 
