@@ -2,61 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Helpers\CheckoutHelpers;
-use App\Http\Requests\CheckoutRequest;
-use App\Models\Order;
-use App\Support\Cart;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
 
 class CheckoutController extends Controller
 {
-    use CheckoutHelpers;
-
-    public function showCheckout()
+    public function show()
     {
-        $cart = app(Cart::class)->getData();
-
-        if (empty($cart['items'])) {
-            return redirect()->route('cart.index')->with('error', 'Your cart is empty!');
+        if (!app('laravel-cart')->getQuantity()) {
+            return redirect()->route('products.index');
         }
 
-        return view('checkout', [
-            'cart' => $cart,
-            'shippingOptions' => $this->getShippingOptions(),
-        ]);
+        return view('checkout');
     }
 
-    public function processPayment(CheckoutRequest $request)
+    public function store()
     {
-        $cart = app(Cart::class)->getData();
+        $items = app('laravel-cart')->getCart();
 
-        try {
-            return DB::transaction(function () use ($request, $cart) {
-                $this->validateInventory($cart['items']);
-
-                $order = $this->createOrder($request->all(), $cart);
-
-                $this->finalizeCheckout($order, $cart);
-
-                return redirect()->route('cart.success', $order);
-            });
-
-        } catch (\Exception $e) {
-            Log::error('Checkout failed: ' . $e->getMessage());
-            return redirect()->route('checkout')->with('error', 'Checkout failed: ' . $e->getMessage());
-        }
-    }
-
-    public function handleSuccess(Order $order)
-    {
-        return view('checkout.success', [
-            'order' => $order,
-        ]);
-    }
-
-    public function handleFailure()
-    {
-        return view('checkout.failure')->with('error', 'Payment processing failed.');
+        //
     }
 }

@@ -4,13 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\Category;
-use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
     public function index()
     {
-        $products = Product::paginate(10);
+        $products = Product::take(6)->get();
 
         $newArrivals = Product::query()
             ->latest()

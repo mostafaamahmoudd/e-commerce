@@ -10,7 +10,7 @@
                                     <h2 class="animated fw-900">Supper value deals</h2>
                                     <h1 class="animated fw-900 text-brand">On all products</h1>
                                     <p class="animated">Save more with coupons & up to 70% off</p>
-                                    <a class="animated btn btn-brush btn-brush-3" href="product-details.html"> Shop Now </a>
+                                    <a class="animated btn btn-brush btn-brush-3" href="{{ route('products.index') }}"> Shop Now </a>
                                 </div>
                             </div>
                             <div class="col-lg-7 col-md-6">
@@ -71,39 +71,11 @@
         <section class="product-tabs section-padding position-relative">
             <div class="container">
                         <div class="row product-grid-4">
-                            <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6 col-6">
-                                <div class="product-cart-wrap mb-30">
-                                    <div class="product-img-action-wrap">
-                                        <div class="product-img product-img-zoom">
-                                            <a href="product-details.html">
-                                                <img class="default-img" src="{{ url('/images/shop/product-1-1.jpg') }}" alt="">
-                                                <img class="hover-img" src="{{ url('/images/shop/product-1-2.jpg') }}" alt="">
-                                            </a>
-                                        </div>
-                                        <div class="product-badges product-badges-position product-badges-mrg">
-                                            <span class="hot">Hot</span>
-                                        </div>
-                                    </div>
-                                    <div class="product-content-wrap">
-                                        <div class="product-category">
-                                            <a href="shop.html">Clothing</a>
-                                        </div>
-                                        <h2><a href="product-details.html">Colorful Pattern Shirts</a></h2>
-                                        <div class="rating-result" title="90%">
-                                            <span>
-                                                <span>90%</span>
-                                            </span>
-                                        </div>
-                                        <div class="product-price">
-                                            <span>$238.85 </span>
-                                            <span class="old-price">$245.8</span>
-                                        </div>
-                                        <div class="product-action-1 show">
-                                            <a aria-label="Add To Cart" class="action-btn hover-up" href="cart.html"><i class="fi-rs-shopping-bag-add"></i></a>
-                                        </div>
-                                    </div>
+                            @foreach($products as $product)
+                                <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6 col-6">
+                                    <x-product-card :product="$product" />
                                 </div>
-                            </div>
+                            @endforeach
                         </div>
             </div>
         </section>
@@ -114,14 +86,16 @@
                 <div class="carausel-6-columns-cover position-relative">
                     <div class="slider-arrow slider-arrow-2 carausel-6-columns-arrow" id="carausel-6-columns-arrows"></div>
                     <div class="carausel-6-columns" id="carausel-6-columns">
-                        @foreach($popularCategories as $popularCategory)
+                        @foreach($popularCategories as $category)
                             <div class="card-1">
                                 <figure class="img-hover-scale overflow-hidden">
-                                    <a href="shop.html"><img src="{{ url('/images/shop/category-thumb-1.jpg') }}" alt=""></a>
+                                    <a href="{{ route('categories.show', $category) }}">
+                                        <img src="{{ url('/images/shop/category-thumb-1.jpg') }}" alt="{{ $category->name }}">
+                                    </a>
                                 </figure>
                                 <h5>
-                                    <a href="shop.html">
-                                        {{ $popularCategory->name }}
+                                    <a href="{{ route('categories.show', $category) }}">
+                                        {{ $category->name }}
                                     </a>
                                 </h5>
                             </div>

@@ -3,22 +3,36 @@
 use Illuminate\Support\Facades\Route;
 
 
-Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('welcome');
+Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])
+    ->name('welcome');
 
-Route::get('/products', [App\Http\Controllers\ProductController::class, 'index'])->name('products.index');
-Route::get('/products/{product:slug}', [App\Http\Controllers\ProductController::class, 'show'])->name('products.show');
-Route::get('/search', [App\Http\Controllers\ProductController::class, 'search'])->name('products.search');
+Route::get('/categories/{category}', [App\Http\Controllers\CategoryController::class, 'show'])
+    ->name('categories.show');
 
-Route::resource('cart', App\Http\Controllers\CartController::class);
+Route::resource('/products', App\Http\Controllers\ProductController::class)
+    ->only('index', 'show');
 
-Route::resource('checkout', \App\Http\Controllers\CheckoutController::class);
+Route::get('/cart', [App\Http\Controllers\CartController::class, 'show'])
+    ->name('cart');
 
-Route::view('/products/{product}', 'products.show');
+Route::post('/cart/{product}', [App\Http\Controllers\CartController::class, 'store'])
+    ->name('cart.store');
 
-Route::view('/cart', 'cart');
+Route::get('/cart/{product}/remove', [App\Http\Controllers\CartController::class, 'remove'])
+    ->name('cart.remove');
 
-Route::view('/checkout', 'checkout');
+Route::get('/cart/clear', [App\Http\Controllers\CartController::class, 'clear'])
+    ->name('cart.clear');
 
-Route::view('/page', 'page');
+Route::get('/checkout', [App\Http\Controllers\CheckoutController::class, 'show'])
+    ->name('checkout');
+Route::post('/checkout', [App\Http\Controllers\CheckoutController::class, 'store'])
+    ->middleware('auth');
+
+Route::view('/pages/privacy-policy', 'pages.privacy-policy')
+    ->name('pages.privacy-policy');
+
+Route::view('/pages/terms-conditions', 'pages.terms-conditions')
+    ->name('pages.terms-conditions');
 
 require __DIR__.'/auth.php';
