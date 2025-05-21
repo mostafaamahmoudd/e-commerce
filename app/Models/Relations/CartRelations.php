@@ -2,18 +2,15 @@
 
 namespace App\Models\Relations;
 
-use App\Models\Product;
-use App\Models\User;
+use App\Models\CartItem;
 
 trait CartRelations
 {
-    public function user()
+    /**
+     * Relation one-to-many, CartItem model.
+     */
+    public function items(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return $this->belongsTo(User::class);
-    }
-
-    public function product()
-    {
-        return $this->belongsTo(Product::class);
+        return $this->hasMany(CartItem::class);
     }
 }

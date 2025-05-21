@@ -1,5 +1,5 @@
 <x-app-layout>
-    <x-page-header title="Page" />
+    <x-page-header title="Privacy Policy" />
 
         <section class="mt-50 mb-50">
             <div class="container">

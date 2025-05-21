@@ -79,39 +79,16 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td class="image product-thumbnail"><img src="assets/imgs/shop/product-1-1.jpg" alt="#"></td>
-                                            <td>
-                                                <h5><a href="product-details.html">Yidarton Women Summer Blue</a></h5> <span class="product-qty">x 2</span>
-                                            </td>
-                                            <td>$180.00</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="image product-thumbnail"><img src="assets/imgs/shop/product-2-1.jpg" alt="#"></td>
-                                            <td>
-                                                <h5><a href="product-details.html">LDB MOON Women Summe</a></h5> <span class="product-qty">x 1</span>
-                                            </td>
-                                            <td>$65.00</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="image product-thumbnail"><img src="assets/imgs/shop/product-3-1.jpg" alt="#"></td>
-                                            <td><i class="ti-check-box font-small text-muted mr-10"></i>
-                                                <h5><a href="product-details.html">Women's Short Sleeve Loose</a></h5> <span class="product-qty">x 1</span>
-                                            </td>
-                                            <td>$35.00</td>
-                                        </tr>
-                                        <tr>
-                                            <th>SubTotal</th>
-                                            <td class="product-subtotal" colspan="2">$280.00</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Shipping</th>
-                                            <td colspan="2"><em>Free Shipping</em></td>
-                                        </tr>
-                                        <tr>
-                                            <th>Total</th>
-                                            <td colspan="2" class="product-subtotal"><span class="font-xl text-brand fw-900">$280.00</span></td>
-                                        </tr>
+                                        @foreach(app('laravel-cart')->getCart() as $cartItem)
+                                            @php($item = app('laravel-cart')->getItem($cartItem))
+                                            <tr>
+                                                <td class="image product-thumbnail"><img src="{{ url('/images/shop/product-1-1.jpg') }}" alt="#"></td>
+                                                <td>
+                                                    <h5><a href="{{ route('products.show', $item) }}">{{ $item->name }}</a></h5> <span class="product-qty">x {{ $cartItem['quantity'] }}</span>
+                                                </td>
+                                                <td>${{ $item->price }}</td>
+                                            </tr>
+                                        @endforeach
                                     </tbody>
                                 </table>
                             </div>

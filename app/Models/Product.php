@@ -3,10 +3,13 @@
 namespace App\Models;
 
 use App\Models\Relations\ProductRelations;
+use App\Support\Cartable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Product extends Model
+class Product extends Model implements Cartable
 {
+    use HasFactory;
     use ProductRelations;
 
     protected $fillable = [
@@ -14,7 +17,8 @@ class Product extends Model
         'description',
         'price',
         'quantity',
-        'media',
+        'sku',
+        'category_id',
     ];
 
     /**
@@ -28,5 +32,15 @@ class Product extends Model
             'quantity' => 'integer',
             'price' => 'float',
         ];
+    }
+
+    public function getQuantity()
+    {
+        return $this->quantity - ($this->orderItems->sum('pivot.quantity') ?? 0);
+    }
+
+    public function getPrice(): float
+    {
+        return $this->price;
     }
 }
