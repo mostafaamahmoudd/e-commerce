@@ -1,6 +1,15 @@
 A Laravel-based e-commerce solution with modern features.
 
-## Installation
+## Getting Started
+
+### Prerequisites
+
+- PHP 8.1+
+- Composer 2.5+
+- Node.js 16+
+- MySQL 8.0+
+
+### Installation
 
 1. Clone the repository:
    ```bash
